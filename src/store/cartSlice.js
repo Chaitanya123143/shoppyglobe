@@ -1,34 +1,36 @@
-// Redux slice handling e-commerce cart tracking mechanisms
 import { createSlice } from '@reduxjs/toolkit';
+
+// Pull saved tracking items if browser cache exists
+const initialSavedItems = JSON.parse(localStorage.getItem('sg_cart_items')) || [];
 
 const cartSlice = createSlice({
   name: 'cart',
-  initialState: { items: [] },
+  initialState: { items: initialSavedItems },
   reducers: {
-    // Add product to cart or increment quantity if it exists [cite: 32, 34]
     addToCart: (state, action) => {
-      const item = state.items.find(i => i.id === action.payload.id);
-      if (item) {
-        item.quantity += 1;
+      const existing = state.items.find(item => item.id === action.payload.id);
+      if (existing) {
+        existing.quantity += 1;
       } else {
         state.items.push({ ...action.payload, quantity: 1 });
       }
+      localStorage.setItem('sg_cart_items', JSON.stringify(state.items));
     },
-    // Remove a product from the cart completely [cite: 33]
     removeFromCart: (state, action) => {
-      state.items = state.items.filter(i => i.id !== action.payload);
+      state.items = state.items.filter(item => item.id !== action.payload);
+      localStorage.setItem('sg_cart_items', JSON.stringify(state.items));
     },
-    // Adjust quantity while enforcing that it cannot fall below 1 [cite: 34, 35]
     updateQuantity: (state, action) => {
       const { id, quantity } = action.payload;
       const item = state.items.find(i => i.id === id);
-      if (item && quantity >= 1) {
+      if (item && quantity > 0) {
         item.quantity = quantity;
       }
+      localStorage.setItem('sg_cart_items', JSON.stringify(state.items));
     },
-    // Reset cart to an empty array upon order placement [cite: 16]
     clearCart: (state) => {
       state.items = [];
+      localStorage.removeItem('sg_cart_items');
     }
   }
 });
