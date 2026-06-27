@@ -1,4 +1,5 @@
-// Redux slice handling e-commerce cart tracking mechanismsimport { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
+
 const cartSlice = createSlice({
   name: 'cart',
   initialState: { items: [] },
