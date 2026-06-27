@@ -6,6 +6,7 @@ import { toggleWishlist } from '../store/userSlice';
 
 const ProductItem = ({ product }) => {
   const dispatch = useDispatch();
+  // Safe navigation fallback to prevent breaking if user slice isn't loaded yet
   const wishlist = useSelector(state => state.user?.wishlist || []);
   const isWishlisted = wishlist.includes(product.id);
   const rupeePrice = Math.round(product.price * 85);
@@ -14,7 +15,17 @@ const ProductItem = ({ product }) => {
     <div className="product-card">
       <button 
         onClick={() => dispatch(toggleWishlist(product.id))}
-        style={{ position: 'absolute', top: '10px', right: '10px', background: 'none', border: 'none', fontSize: '1.4rem', cursor: 'pointer', z-index: '10', color: isWishlisted ? 'red' : '#ccc' }}
+        style={{ 
+          position: 'absolute', 
+          top: '10px', 
+          right: '10px', 
+          background: 'none', 
+          border: 'none', 
+          fontSize: '1.4rem', 
+          cursor: 'pointer', 
+          zIndex: '10', 
+          color: isWishlisted ? 'red' : '#ccc' 
+        }}
       >
         {isWishlisted ? '❤️' : '🤍'}
       </button>
@@ -29,7 +40,12 @@ const ProductItem = ({ product }) => {
         </div>
         <div className="card-buttons">
           <Link to={`/product/${product.id}`} className="view-btn">View</Link>
-          <button onClick={() => dispatch(addToCart({ ...product, customPrice: rupeePrice }))} className="add-btn">Add to Cart</button>
+          <button 
+            onClick={() => dispatch(addToCart({ ...product, customPrice: rupeePrice }))} 
+            className="add-btn"
+          >
+            Add to Cart
+          </button>
         </div>
       </div>
     </div>
