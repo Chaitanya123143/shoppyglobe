@@ -1,3 +1,4 @@
+// Custom hook handling fetch requests from dummyjson api endpoints
 import { useState, useEffect } from 'react';
 
 const useFetchProducts = (url) => {
