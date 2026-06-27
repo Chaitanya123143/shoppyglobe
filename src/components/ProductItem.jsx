@@ -34,6 +34,10 @@ const ProductItem = ({ product }) => {
       </div>
       <div className="card-info">
         <h3 className="product-title" title={product.title}>{product.title}</h3>
+        {/* Stock indicator badge simulation */}
+<div style={{ fontSize: '0.75rem', fontWeight: 'bold', margin: '4px 0', color: (product.stock < 15) ? '#d97706' : '#388e3c' }}>
+  {product.stock < 15 ? `🔥 Only ${product.stock} items left in stock!` : '✔ In Stock'}
+</div>
         <div className="product-meta">
           <span className="product-rating">★ {product.rating || '4.2'}</span>
           <span className="product-price">₹{rupeePrice.toLocaleString('en-IN')}</span>
