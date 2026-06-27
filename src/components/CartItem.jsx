@@ -8,9 +8,9 @@ const CartItem = ({ item }) => {
   return (
     <div className="cart-item">
       <img src={item.thumbnail} alt={item.title} />
-      <div style={{flex: 1}}>
-        <h4 style={{fontSize: '1.1rem', marginBottom: '0.5rem'}}>{item.title}</h4>
-        <p style={{fontSize: '1.2rem', fontWeight: 'bold'}}>₹{item.customPrice.toLocaleString('en-IN')}</p>
+      <div style={{ flex: 1 }}>
+        <h4 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>{item.title}</h4>
+        <p style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>₹{item.customPrice.toLocaleString('en-IN')}</p>
         
         <div className="qty-controls">
           <button onClick={() => dispatch(updateQuantity({ id: item.id, quantity: item.quantity - 1 }))}>-</button>
