@@ -1,16 +1,23 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../store/cartSlice';
+import { toggleWishlist } from '../store/userSlice';
 
 const ProductItem = ({ product }) => {
   const dispatch = useDispatch();
-  
-  // Calculate a realistic price in Indian Rupees (USD Price * 85)
+  const wishlist = useSelector(state => state.user?.wishlist || []);
+  const isWishlisted = wishlist.includes(product.id);
   const rupeePrice = Math.round(product.price * 85);
 
   return (
     <div className="product-card">
+      <button 
+        onClick={() => dispatch(toggleWishlist(product.id))}
+        style={{ position: 'absolute', top: '10px', right: '10px', background: 'none', border: 'none', fontSize: '1.4rem', cursor: 'pointer', z-index: '10', color: isWishlisted ? 'red' : '#ccc' }}
+      >
+        {isWishlisted ? '❤️' : '🤍'}
+      </button>
       <div className="img-wrapper">
         <img src={product.thumbnail} alt={product.title} loading="lazy" />
       </div>
@@ -22,12 +29,7 @@ const ProductItem = ({ product }) => {
         </div>
         <div className="card-buttons">
           <Link to={`/product/${product.id}`} className="view-btn">View</Link>
-          <button 
-            onClick={() => dispatch(addToCart({ ...product, customPrice: rupeePrice }))} 
-            className="add-btn"
-          >
-            Add to Cart
-          </button>
+          <button onClick={() => dispatch(addToCart({ ...product, customPrice: rupeePrice }))} className="add-btn">Add to Cart</button>
         </div>
       </div>
     </div>
