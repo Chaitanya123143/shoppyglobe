@@ -1,3 +1,4 @@
+//React Router tree mapping configuration using createBrowserRouter
 import React, { Suspense, lazy } from 'react';
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import Header from './components/Header';
