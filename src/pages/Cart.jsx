@@ -6,12 +6,20 @@ import { applyCoupon, removeCoupon } from '../store/couponSlice';
 
 const Cart = () => {
   const dispatch = useDispatch();
-  const cartItems = useSelector(state => state.cart.items);
-  const { code, discountPercentage, error } = useSelector(state => state.coupon || { code: '', discountPercentage: 0, error: '' });
+  const cartItems = useSelector(state => state.cart?.items || []);
+  const couponState = useSelector(state => state.coupon || { code: '', discountPercentage: 0, error: '' });
+  
+  const { code = '', discountPercentage = 0, error = '' } = couponState;
   const [couponInput, setCouponInput] = useState('');
   
-  const subtotal = cartItems.reduce((acc, item) => acc + (item.customPrice * item.quantity), 0);
-  const discountAmount = (subtotal * discountPercentage) / 100;
+  // Strict fallback validation to guarantee number types and prevent NaN leaks
+  const subtotal = cartItems.reduce((acc, item) => {
+    const price = item?.customPrice || Math.round((item?.price || 0) * 85);
+    const qty = item?.quantity || 1;
+    return acc + (price * qty);
+  }, 0);
+
+  const discountAmount = Math.round((subtotal * (discountPercentage || 0)) / 100);
   const shipping = subtotal > 4999 || subtotal === 0 ? 0 : 149;
   const total = subtotal - discountAmount + shipping;
 
@@ -19,7 +27,7 @@ const Cart = () => {
     return (
       <div style={{textAlign: 'center', padding: '4rem 1rem', background: 'white'}}>
         <h2>Your Shopping Cart is Empty</h2>
-        <Link to="/" className="view-btn" style={{padding: '10px 30px', textDecoration:'none'}}>Shop Now</Link>
+        <Link to="/" className="view-btn" style={{padding: '10px 30px', textDecoration:'none', display:'inline-block', marginTop:'10px'}}>Shop Now</Link>
       </div>
     );
   }
@@ -32,7 +40,7 @@ const Cart = () => {
       </div>
       
       <div>
-        {/* Amazon-Style Coupon Widget Box */}
+        {/* Coupon Widget Box */}
         <div style={{ background: 'white', padding: '1.5rem', border: '1px solid #e0e0e0', marginBottom: '1rem' }}>
           <h4 style={{ fontSize: '0.9rem', marginBottom: '0.5rem', color: '#555' }}>Have a Promo Code? (Try: SG20)</h4>
           <div style={{ display: 'flex', gap: '8px' }}>
@@ -59,12 +67,12 @@ const Cart = () => {
           <h3 style={{color: '#878787', fontSize: '0.9rem', textTransform: 'uppercase', paddingBottom: '1rem', borderBottom: '1px solid #f0f0f0'}}>Price Details</h3>
           <div style={{display:'flex', justifyContent:'space-between', margin:'1rem 0'}}>
             <span>Price ({cartItems.length} items):</span>
-            <span>₹{subtotal.toLocaleString('en-IN')}</span>
+            <span>₹{(subtotal || 0).toLocaleString('en-IN')}</span>
           </div>
           {discountPercentage > 0 && (
             <div style={{display:'flex', justifyContent:'space-between', margin:'1rem 0', color: 'var(--success)', fontWeight: '600'}}>
               <span>Coupon Discount ({discountPercentage}%):</span>
-              <span>-₹{discountAmount.toLocaleString('en-IN')}</span>
+              <span>-₹{(discountAmount || 0).toLocaleString('en-IN')}</span>
             </div>
           )}
           <div style={{display:'flex', justifyContent:'space-between', margin:'1rem 0', borderBottom: '1px dashed #e0e0e0', paddingBottom: '1rem'}}>
@@ -73,7 +81,7 @@ const Cart = () => {
           </div>
           <div style={{display:'flex', justifyContent:'space-between', margin:'1.5rem 0', fontSize:'1.2rem', fontWeight:'700'}}>
             <span>Total Amount:</span>
-            <span>₹{total.toLocaleString('en-IN')}</span>
+            <span>₹{(total || 0).toLocaleString('en-IN')}</span>
           </div>
           <Link to="/checkout" className="add-btn" style={{ textDecoration: 'none', display: 'block', textAlign: 'center', padding: '0.75rem', borderRadius: '2px' }}>Proceed to Checkout</Link>
         </div>
