@@ -1,40 +1,44 @@
-//React Router tree mapping configuration using createBrowserRouter
-import React, { Suspense, lazy } from 'react';
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
+import React from 'react';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Header from './components/Header';
+import ProductList from './pages/ProductList';
+import ProductDetail from './pages/ProductDetail';
+import Cart from './pages/Cart';       // 1. Make sure this import exists!
+import Checkout from './pages/Checkout';
+import NotFound from './components/NotFound';
 
-// Performance Tuning: Code splitting via lazy loaded declarations
-const ProductList = lazy(() => import('./pages/ProductList'));
-const ProductDetail = lazy(() => import('./pages/ProductDetail'));
-const Cart = lazy(() => import('./pages/Cart'));
-const Checkout = lazy(() => import('./pages/Checkout'));
-const NotFound = lazy(() => import('./components/NotFound'));
-
-const MainLayout = () => (
+// Layout wrapper to include the Header on every page
+const Layout = ({ children }) => (
   <>
     <Header />
-    <main className="content-box">
-      <Suspense fallback={<div className="status">Loading Content View...</div>}>
-        <Outlet />
-      </Suspense>
-    </main>
+    <div className="content-box">
+      {children}
+    </div>
   </>
 );
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <MainLayout />,
-    errorElement: <Suspense fallback={<div>Loading...</div>}><NotFound /></Suspense>,
-    children: [
-      { index: true, element: <ProductList /> },
-      { path: "product/:id", element: <ProductDetail /> },
-      { path: "cart", element: <Cart /> },
-      { path: "checkout", element: <Checkout /> }
-    ]
+    path: '/',
+    element: <Layout><ProductList /></Layout>,
+    errorElement: <NotFound />
+  },
+  {
+    path: '/product/:id',
+    element: <Layout><ProductDetail /></Layout>
+  },
+  {
+    path: '/cart',                  // 2. Make sure this exact path is defined!
+    element: <Layout><Cart /></Layout>
+  },
+  {
+    path: '/checkout',
+    element: <Layout><Checkout /></Layout>
   }
 ]);
 
-export default function App() {
+const App = () => {
   return <RouterProvider router={router} />;
-}
+};
+
+export default App;
